@@ -2,13 +2,14 @@
 
 namespace App\Events;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\PrivateChannel;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
 class GotMessage implements ShouldBroadcast
 {
@@ -29,8 +30,11 @@ class GotMessage implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        return [
-            new PrivateChannel('channel_for_everyone'),
-        ];
+        try {
+            return [new PrivateChannel('channel_for_everyone')];
+        } catch (\Exception $e) {
+            Log::error("Failed to broadcast on channel: " . $e->getMessage());
+            return [];
+        }
     }
 }
